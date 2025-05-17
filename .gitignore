@@ -1,14 +1,3 @@
-# Arquivos de áudio e vídeo
-*.mp4
-*.wav
-
-# Arquivos de transcrição e logs
-transcricao_final.txt
-transcricao.log
-
-# Diretório de áudios temporários
-Audios/
-
 # Python
 __pycache__/
 *.py[cod]
@@ -32,18 +21,28 @@ wheels/
 .installed.cfg
 *.egg
 
-# Ambientes virtuais
+# Ambiente Virtual
 venv/
 ENV/
-env/
 
 # IDEs
 .idea/
 .vscode/
 *.swp
 *.swo
-*~
 
-# Sistema operacional
+# Arquivos de ambiente
+.env
+.env.local
+
+# Arquivos temporários do projeto
+uploads/
+Audios/
+output/
+*.wav
+*.mp4
+*.log
+
+# Arquivos do sistema
 .DS_Store
 Thumbs.db 
