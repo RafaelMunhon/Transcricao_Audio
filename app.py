@@ -17,6 +17,14 @@ UPLOAD_DIR = BASE_DIR / 'uploads'
 AUDIO_DIR = BASE_DIR / 'Audios'
 OUTPUT_DIR = BASE_DIR / 'output'
 
+# Extensões permitidas
+ALLOWED_EXTENSIONS = {
+    # Formatos de vídeo
+    'mp4', 'avi', 'mkv', 'mov', 'wmv', 'flv', 'webm',
+    # Formatos de áudio
+    'mp3', 'wav', 'ogg', 'm4a', 'wma', 'aac', 'flac','waptt'
+}
+
 # Criar diretórios se não existirem
 UPLOAD_DIR.mkdir(exist_ok=True)
 AUDIO_DIR.mkdir(exist_ok=True)
@@ -29,6 +37,10 @@ CORS(app)
 
 # Configurações do aplicativo
 app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024  # 500MB max-limit
+
+def allowed_file(filename):
+    """Verifica se a extensão do arquivo é permitida."""
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def limpar_diretorios_trabalho():
     """Limpa todos os diretórios de trabalho."""
@@ -47,8 +59,8 @@ def limpar_diretorios_trabalho():
 
         # Limpar diretório de uploads
         print("\nLimpando diretório de uploads...")
-        limpar_diretorio(UPLOAD_DIR, "mp4")
-        limpar_diretorio(UPLOAD_DIR, "wav")
+        for ext in ALLOWED_EXTENSIONS:
+            limpar_diretorio(UPLOAD_DIR, ext)
 
         # Limpar diretório de áudios
         print("\nLimpando diretório de áudios...")
@@ -93,20 +105,20 @@ def upload_file():
         if file.filename == '':
             return jsonify({'error': 'Nenhum arquivo selecionado'}), 400
         
-        if not file.filename.endswith('.mp4'):
-            return jsonify({'error': 'Por favor, envie apenas arquivos MP4'}), 400
+        if not allowed_file(file.filename):
+            return jsonify({'error': f'Formato de arquivo não suportado. Formatos aceitos: {", ".join(ALLOWED_EXTENSIONS)}'}), 400
 
         # Preparar caminhos dos arquivos
         filename = secure_filename(file.filename)
-        input_mp4 = UPLOAD_DIR / filename
+        input_file = UPLOAD_DIR / filename
         output_wav = UPLOAD_DIR / "audio_extraido.wav"
         output_txt = OUTPUT_DIR / "transcricao_final.txt"
         
         # Salvar e processar arquivo
-        file.save(str(input_mp4))
-        print(f"\nArquivo MP4 salvo em: {input_mp4}")
+        file.save(str(input_file))
+        print(f"\nArquivo salvo em: {input_file}")
 
-        extrair_audio(str(input_mp4), str(output_wav))
+        extrair_audio(str(input_file), str(output_wav))
         print(f"Áudio extraído para: {output_wav}")
 
         dividir_audio(str(output_wav))

@@ -44,12 +44,15 @@ def setup_directories() -> None:
         logger.error(f"Erro ao criar diretório: {e}")
         raise
 
-def extrair_audio(input_video: str, output_audio: str) -> None:
-    """Extrai o áudio de um arquivo MP4 e converte para WAV."""
+def extrair_audio(input_file: str, output_audio: str) -> None:
+    """Extrai o áudio de um arquivo de áudio/vídeo e converte para WAV."""
     try:
-        print("Extraindo áudio do vídeo...")
+        print("Extraindo áudio do arquivo...")
         result = subprocess.run(
-            [str(FFMPEG_PATH), '-i', input_video, '-ac', '1', '-ar', '16000', output_audio, '-y'],
+            [str(FFMPEG_PATH), '-i', input_file, '-ac', '1', '-ar', '16000', 
+             '-acodec', 'pcm_s16le',  # Forçar codificação WAV padrão
+             '-vn',  # Ignorar vídeo se existir
+             output_audio, '-y'],
             capture_output=True,
             text=True,
             encoding='latin-1',
